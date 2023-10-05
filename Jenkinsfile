@@ -1,5 +1,10 @@
 pipeline {
     agent any
+    
+    tools {
+        // Define Node.js version from Global Tools Configuration
+        nodejs ""
+    }
 
     stages {
         stage('Checkout') {
@@ -11,21 +16,56 @@ pipeline {
 
         stage('Build') {
             steps {
+                // Install dependencies
+                sh 'npm install'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // Run tests
+                sh 'npm test'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
                 script {
                     if (env.BRANCH_NAME == 'main') {
-                        // Set port number for main branch
-                        port = 3000
+                        // Build Docker image for main branch
+                        sh 'docker build -t nodemain:v1.0 .'
                     } else if (env.BRANCH_NAME == 'dev') {
-                        // Set port number for dev branch
-                        port = 3001
+                        // Build Docker image for dev branch
+                        sh 'docker build -t nodedev:v1.0 .'
                     } else {
-                        // Default port for other branches
-                        port = 8080
+                        echo 'No Docker image to build for this branch'
                     }
+                }
+            }
+        }
 
-                    // Add your build steps here, using the 'port' variable as needed
-                    sh "echo 'Port number is $port'"
-                    // Add more build and deploy steps as required
+        stage('Stop and Remove Containers') {
+            steps {
+                // Stop and remove previously running containers to minimize downtime
+                script {
+                    sh 'docker stop $(docker ps -q)'
+                    sh 'docker rm $(docker ps -a -q)'
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        // Run Docker container for main branch
+                        sh 'docker run -d --expose 3000 -p 3000:3000 nodemain:v1.0'
+                    } else if (env.BRANCH_NAME == 'dev') {
+                        // Run Docker container for dev branch
+                        sh 'docker run -d --expose 3001 -p 3001:3000 nodedev:v1.0'
+                    } else {
+                        echo 'No Docker container to run for this branch'
+                    }
                 }
             }
         }
