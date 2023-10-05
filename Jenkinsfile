@@ -3,7 +3,7 @@ pipeline {
     
     tools {
         // Define Node.js version from Global Tools Configuration
-        nodejs ""
+        nodejs "18"
     }
 
     stages {
