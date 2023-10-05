@@ -1,14 +1,5 @@
 pipeline {
     agent any
-    
-    tools {
-        nodejs {
-            // Name of the Node.js installation defined in Global Tool Configuration
-            name: "NodeJS"
-            // Version of Node.js you want to use
-            version: "20.0.8"
-        }
-    }
 
     stages {
         stage('Checkout') {
