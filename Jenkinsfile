@@ -1,6 +1,17 @@
 pipeline {
     agent any
 
+    tools {
+        // Define Node.js version from Global Tools Configuration
+        NodeJS 20.0.8
+        nodejs {
+            // Name of the Node.js installation defined in Global Tool Configuration
+            name: "NodeJS"
+            // Version of Node.js you want to use
+            version: "20.0.8"
+        }
+    }
+    
     stages {
         stage('Checkout') {
             steps {
