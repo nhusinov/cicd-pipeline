@@ -1,11 +1,10 @@
 pipeline {
     agent any
-    
-    tools {
-        // Define Node.js version from Global Tools Configuration
-        nodejs "18"
-    }
 
+    tools {
+        nodejs "node"
+    }
+    
     stages {
         stage('Checkout') {
             steps {
